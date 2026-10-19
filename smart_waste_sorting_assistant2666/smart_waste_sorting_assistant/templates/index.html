@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#087f5b">
+<title>Smart Waste Sorting Assistant</title>
+<style>
+:root{--green:#087f5b;--dark:#12352c;--mint:#e8f7ef;--ink:#19342d;--muted:#60736d;--line:#dce9e2}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f5faf7;color:var(--ink)}
+header{background:linear-gradient(120deg,#075e45,#10a36d);color:white;padding:28px 18px 34px}
+.wrap{max-width:1050px;margin:auto}.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.2px}.logo{background:#ffffff25;border:1px solid #ffffff40;border-radius:15px;padding:12px;font-size:28px}
+h1{font-size:clamp(28px,4vw,44px);line-height:1.1;margin:25px 0 10px}.hero p{max-width:650px;line-height:1.65;margin:0;color:#e5fff2}
+main{max-width:1050px;margin:-18px auto 0;padding:0 18px 40px}.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}
+.card{background:white;border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 10px 30px #12352c0b}.card h2{margin:0 0 8px;font-size:21px}.sub{color:var(--muted);font-size:14px;line-height:1.5;margin-top:0}
+label{display:block;font-weight:700;margin:20px 0 8px}input{width:100%;border:1px solid #c8d9d0;border-radius:12px;padding:15px 14px;font-size:16px;outline:none}input:focus{border-color:var(--green);box-shadow:0 0 0 3px #087f5b1b}
+button{border:0;cursor:pointer;border-radius:12px;padding:13px 16px;font-size:15px;font-weight:750}.primary{background:var(--green);color:white;width:100%;margin-top:12px}.primary:hover{background:#066b4d}.secondary{background:var(--mint);color:var(--green);border:1px solid #c8e8d6}.examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.examples button{font-size:13px;padding:9px 11px;background:#f1f7f3;color:#35594c;border:1px solid var(--line)}
+.result{display:none;margin-top:20px;border:1px solid #cfe8d9;background:#f5fcf7;border-radius:16px;padding:18px}.result.show{display:block}.result-head{display:flex;gap:12px;align-items:center}.bigicon{font-size:34px}.tag{display:inline-block;background:#dff4e7;color:#075e45;border-radius:100px;padding:6px 10px;font-size:11px;font-weight:800;letter-spacing:.5px}.result h3{margin:9px 0 5px;font-size:20px}.result p{line-height:1.55;margin:7px 0;color:#3d5b50}.result strong{color:var(--dark)}.why{border-top:1px solid #d7eade;margin-top:14px;padding-top:12px}.error{color:#a12a2a;font-size:14px;margin-top:10px}
+.bin-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.bin{border:1px solid var(--line);border-radius:14px;padding:15px}.bin .emoji{font-size:25px}.bin h3{font-size:14px;margin:8px 0 5px}.bin p{font-size:12px;line-height:1.45;color:var(--muted);margin:0}.blue{border-top:4px solid #2685df}.green{border-top:4px solid #20a565}.red{border-top:4px solid #e45b58}.grey{border-top:4px solid #87928c}
+.feature-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.feature{background:white;border:1px solid var(--line);border-radius:16px;padding:18px}.feature span{font-size:24px}.feature h3{font-size:15px;margin:10px 0 5px}.feature p{font-size:13px;line-height:1.5;color:var(--muted);margin:0}
+footer{text-align:center;color:var(--muted);font-size:12px;line-height:1.6;padding:10px 18px 30px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.feature-row{grid-template-columns:1fr}.card{padding:19px}header{padding-top:22px}.bin-grid{gap:9px}}
+</style>
+</head>
+<body>
+<header><div class="wrap hero">
+  <div class="brand"><div class="logo">♻️</div><div>SMART WASTE<br>SORTING ASSISTANT</div></div>
+  <h1>Sort smarter.<br>Keep our planet cleaner.</h1>
+  <p>Enter an item to discover its likely waste category, disposal route, and why sorting it correctly matters. Built for a hands-on college Tech Fest demonstration.</p>
+</div></header>
+<main>
+<div class="grid">
+<section class="card">
+<h2>🔎 Identify your waste</h2>
+<p class="sub">Type an item below, or tap one of the example items.</p>
+<form id="wasteForm">
+<label for="item">Enter the waste item</label>
+<input id="item" name="item" placeholder="e.g. plastic bottle, banana peel, battery" autocomplete="off" required>
+<button class="primary" type="submit">Find the right disposal route →</button>
+</form>
+<div class="examples" aria-label="Example items">
+<button type="button" data-item="plastic bottle">Plastic bottle</button><button type="button" data-item="banana peel">Banana peel</button><button type="button" data-item="paper">Paper</button><button type="button" data-item="battery">Battery</button><button type="button" data-item="cardboard">Cardboard</button><button type="button" data-item="mobile phone">Mobile phone</button><button type="button" data-item="metal can">Metal can</button>
+</div>
+<div id="error" class="error" role="alert"></div>
+<div id="result" class="result" aria-live="polite">
+  <div class="result-head"><div id="icon" class="bigicon">♻️</div><div><span class="tag">SORTING RESULT</span><h3 id="itemTitle">Plastic Bottle</h3></div></div>
+  <p><strong>Category:</strong> <span id="category"></span></p>
+  <p><strong>Recommended bin / route:</strong> <span id="bin"></span></p>
+  <button id="whyBtn" type="button" class="secondary" aria-expanded="false">Why this category? +</button>
+  <div id="whyBox" class="why" hidden><p><strong>Why?</strong> <span id="why"></span></p><p><strong>What should I do?</strong> <span id="instructions"></span></p></div>
+</div>
+</section>
+<aside class="card">
+<h2>🗑️ Know your sorting routes</h2>
+<p class="sub">Bin colours and collection systems can vary by municipality. Follow local instructions first.</p>
+<div class="bin-grid">
+<div class="bin blue"><div class="emoji">🟦</div><h3>BLUE · DRY RECYCLABLES</h3><p>Clean paper, cardboard, accepted plastic and metal containers.</p></div>
+<div class="bin green"><div class="emoji">🟩</div><h3>GREEN · ORGANIC</h3><p>Food scraps and compostable garden waste where accepted.</p></div>
+<div class="bin red"><div class="emoji">🔋</div><h3>SPECIAL · HAZARDOUS</h3><p>Batteries, lamps, medicines and other items needing special handling.</p></div>
+<div class="bin grey"><div class="emoji">💻</div><h3>E-WASTE COLLECTION</h3><p>Phones, computers, chargers and electronic equipment.</p></div>
+</div>
+</aside>
+</div>
+<div class="feature-row">
+<div class="feature"><span>🧠</span><h3>Smart classification</h3><p>Recognises common household, recyclable, metal, battery and electronic items.</p></div>
+<div class="feature"><span>💡</span><h3>Learn “Why?”</h3><p>Understand the reason behind each category and get practical disposal guidance.</p></div>
+<div class="feature"><span>🌍</span><h3>Awareness first</h3><p>Encourages responsible sorting, reuse, recycling and safe handling of special waste.</p></div>
+</div>
+</main>
+<footer>
+<strong>Smart Waste Sorting Assistant · Tech Fest Project</strong><br>
+This is an educational guide, not an official waste-disposal authority. Local rules vary. Never place batteries, medicines, broken lamps or electronic devices in ordinary bins; use an appropriate authorised collection service.
+</footer>
+<script>
+const form = document.getElementById('wasteForm');
+const input = document.getElementById('item');
+const resultBox = document.getElementById('result');
+const errorBox = document.getElementById('error');
+const whyBtn = document.getElementById('whyBtn');
+const whyBox = document.getElementById('whyBox');
+
+async function classify(item) {
+  errorBox.textContent = '';
+  if (!item.trim()) { errorBox.textContent = 'Please enter a waste item.'; return; }
+  const submit = form.querySelector('button[type="submit"]');
+  submit.disabled = true; submit.textContent = 'Checking…';
+  try {
+    const response = await fetch('/classify', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({item})
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Unable to classify this item.');
+    document.getElementById('icon').textContent = data.icon || '🔎';
+    document.getElementById('itemTitle').textContent = data.item || item;
+    document.getElementById('category').textContent = data.category;
+    document.getElementById('bin').textContent = data.bin;
+    document.getElementById('why').textContent = data.why;
+    document.getElementById('instructions').textContent = data.instructions;
+    whyBox.hidden = true; whyBtn.setAttribute('aria-expanded','false'); whyBtn.textContent = 'Why this category? +';
+    resultBox.classList.add('show');
+  } catch (e) {
+    errorBox.textContent = e.message || 'Something went wrong. Please try again.';
+  } finally {
+    submit.disabled = false; submit.textContent = 'Find the right disposal route →';
+  }
+}
+form.addEventListener('submit', e => { e.preventDefault(); classify(input.value); });
+document.querySelectorAll('[data-item]').forEach(button => {
+  button.addEventListener('click', () => { input.value = button.dataset.item; classify(input.value); });
+});
+whyBtn.addEventListener('click', () => {
+  whyBox.hidden = !whyBox.hidden;
+  whyBtn.setAttribute('aria-expanded', String(!whyBox.hidden));
+  whyBtn.textContent = whyBox.hidden ? 'Why this category? +' : 'Hide explanation −';
+});
+</script>
+</body></html>
